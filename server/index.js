@@ -5,22 +5,24 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const multer = require("multer");
+
 const appName = "Trifecta";
 const port = "3000";
 
-const multerOptions = {};
-multerOptions.storage = multer.diskStorage({
-  destination: (req, file, withUploadDir) => {
-    withUploadDir(null, 'uploads/')
-  },
-  filename: (req, file, withFilename) => {
-    const filenameArray = file.originalname.split(".");
-    const fileExtension = filenameArray.pop();
-    const filename = filenameArray.join();
+const multerOptions = {
+  storage: multer.diskStorage({
+    destination: (req, file, withUploadDir) => {
+      withUploadDir(null, 'uploads/')
+    },
+    filename: (req, file, withFilename) => {
+      const filenameArray = file.originalname.split(".");
+      const fileExtension = filenameArray.pop();
+      const filename = filenameArray.join();
 
-    withFilename(null, `${filename}-${Date.now()}.${fileExtension}`);
-  }
-})
+      withFilename(null, `${filename}-${Date.now()}.${fileExtension}`);
+    }
+  })
+};
 
 const upload = multer(multerOptions);
 
@@ -34,7 +36,6 @@ app.use(express.static(path.join(__dirname, "../server")));
 app.get("/", (req, res, next) => res.sendFile(path.join(__dirname, "../client/") + "index.html"));
 
 app.post("/api/upload", upload.single("pic"), (req, res, next) => {
-  console.log(req.file);
   res.sendStatus(200);
 });
 
